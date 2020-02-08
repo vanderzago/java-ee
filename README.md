@@ -14,7 +14,8 @@ PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 ```
 - Forge
 
-    - Criar projeto:
+## Criar projeto
+    - $ forge
 
 [vanderz]$ project-new -named jee-project
 ***INFO*** Required inputs not satisfied, entering interactive mode
@@ -55,6 +56,8 @@ Press <ENTER> to confirm, or <CTRL>+C to cancel.
 [jee]$ cdi-setup --cdiVersion 1.1
 ***SUCCESS*** CDI has been installed.
 
+## Configurar Wildfly local
+- Donwload Wildfly 10.0.x
 - Abrir Eclipse
     - Importar projeto como Maven Project
     - Configurar o jboss como server
@@ -66,4 +69,19 @@ Press <ENTER> to confirm, or <CTRL>+C to cancel.
         - Botão direito no projeto > Build Path > Configure Build Path
         - Aba Library > Add Library > Server Runtime > Wildfly 10.x
     - Na aba server, clicar em Wildfly e subir a instancia
-    - Abra o navegador http://localhost:8080
+    - Abra o navegador http://localhost:8080/jee
+
+## Configuração banco mysql
+- Abrir Eclipse
+    - Criar pasta META-INF em src/main/resource
+    - Colocar o arquivo persistence.xml
+    - Tag <jta-data-source>java:jboss/datasources/jeeDS</jta-data-source> possui a informação do datasource do servidor de aplicação
+- Wildfly
+    - Arquivo standalone-full.xml em standalone/configurations possui as confs dos datasources do application server
+    - Criar a pasta com/mysql/main na pasta modules. Dentro da pasta com/mysql/main deve estar o jar do drive mysql e o arquivo module.xml com os dados da lib do mysql
+- Docker mysql
+    docker build -t jee-db mysql/
+    docker run --rm --name jeedb -e MYSQL_DATABASE=jee -e MYSQL_ROOT_PASSWORD_FILE=/run/secrets/PASSWORD -p 3306:3306 -d jee-db:latest
+    docker exec -it jeedb bash
+    docker logs jeedb -f
+    docker stop jeedb
